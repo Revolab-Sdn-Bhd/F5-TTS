@@ -127,33 +127,37 @@ class CustomDataset(Dataset):
         return len(self.data)
 
     def __getitem__(self, index):
-        row = self.data[index]
-        audio_path = row["audio_path"]
-        text = row["text"]
-        duration = row["duration"]
+        try:
+            row = self.data[index]
+            audio_path = row["audio_path"]
+            text = row["text"]
+            duration = row["duration"]
 
-        if self.preprocessed_mel:
-            mel_spec = torch.tensor(row["mel_spec"])
+            if self.preprocessed_mel:
+                mel_spec = torch.tensor(row["mel_spec"])
 
-        else:
-            audio, source_sample_rate = torchaudio.load(audio_path)
-            if audio.shape[0] > 1:
-                audio = torch.mean(audio, dim=0, keepdim=True)
+            else:
+                audio, source_sample_rate = torchaudio.load(audio_path)
+                if audio.shape[0] > 1:
+                    audio = torch.mean(audio, dim=0, keepdim=True)
 
-            if duration > 30 or duration < 0.3:
-                return self.__getitem__((index + 1) % len(self.data))
+                if duration > 30 or duration < 0.3:
+                    return self.__getitem__((index + 1) % len(self.data))
 
-            if source_sample_rate != self.target_sample_rate:
-                resampler = torchaudio.transforms.Resample(source_sample_rate, self.target_sample_rate)
-                audio = resampler(audio)
+                if source_sample_rate != self.target_sample_rate:
+                    resampler = torchaudio.transforms.Resample(source_sample_rate, self.target_sample_rate)
+                    audio = resampler(audio)
 
-            mel_spec = self.mel_spectrogram(audio)
-            mel_spec = mel_spec.squeeze(0)  # '1 d t -> d t')
+                mel_spec = self.mel_spectrogram(audio)
+                mel_spec = mel_spec.squeeze(0)  # '1 d t -> d t')
 
-        return dict(
-            mel_spec=mel_spec,
-            text=text,
-        )
+            return dict(
+                mel_spec=mel_spec,
+                text=text,
+            )
+        except Exception as e:
+            print(e)
+            return None
 
 
 # Dynamic Batch Sampler
@@ -291,6 +295,7 @@ def load_dataset(
 
 
 def collate_fn(batch):
+    batch = [b for b in batch if b is not None]
     mel_specs = [item["mel_spec"].squeeze(0) for item in batch]
     mel_lengths = torch.LongTensor([spec.shape[-1] for spec in mel_specs])
     max_mel_length = mel_lengths.amax()
