@@ -35,12 +35,13 @@ epochs = 100  # use linear decay, thus epochs control the slope
 num_warmup_updates = 2000  # warmup steps
 save_per_updates = 50000  # save checkpoint per steps
 last_per_steps = 500  # save last checkpoint per steps
+checkpoint_activations = True
 
 # model params
 if exp_name == "F5TTS_Base":
     wandb_resume_id = None
     model_cls = DiT
-    model_cfg = dict(dim=1024, depth=22, heads=16, ff_mult=2, text_dim=512, conv_layers=4)
+    model_cfg = dict(dim=1024, depth=22, heads=16, ff_mult=2, text_dim=512, conv_layers=4, checkpoint_activations = checkpoint_activations)
 elif exp_name == "E2TTS_Base":
     wandb_resume_id = None
     model_cls = UNetT
