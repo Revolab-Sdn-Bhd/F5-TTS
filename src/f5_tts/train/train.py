@@ -25,17 +25,17 @@ exp_name = "F5TTS_Base"  # F5TTS_Base | E2TTS_Base
 
 learning_rate = 2.5e-5
 
-batch_size_per_gpu = 58400  # 8 GPUs, 8 * 38400 = 307200
+batch_size_per_gpu = 9400  # 8 GPUs, 8 * 38400 = 307200
 batch_size_type = "frame"  # "frame" or "sample"
 max_samples = 64  # max sequences per batch if use frame-wise batch_size. we set 32 for small models, 64 for base models
 grad_accumulation_steps = 1  # note: updates = steps / grad_accumulation_steps
 max_grad_norm = 1.0
 
 epochs = 100  # use linear decay, thus epochs control the slope
-num_warmup_updates = 100  # warmup steps
-save_per_updates = 5000  # save checkpoint per steps
-last_per_steps = 300  # save last checkpoint per steps
-checkpoint_activations = True
+num_warmup_updates = 2000  # warmup steps
+save_per_updates = 25000  # save checkpoint per steps
+last_per_steps = 5000  # save last checkpoint per steps
+checkpoint_activations = False
 
 # model params
 if exp_name == "F5TTS_Base":
