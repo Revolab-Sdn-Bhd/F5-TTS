@@ -130,7 +130,7 @@ class CustomDataset(Dataset):
     def __getitem__(self, index):
         try:
             row = self.data[index]
-            audio_path = row["audio_path"].replace('/malaysian-stt', '')
+            audio_path = row["audio_path"].replace('/malaysian-stt', '').replace('/revolab', '')
             if '/workspace' not in audio_path:
                 audio_path = os.path.join('/workspace', audio_path)
             if '/workspace' in audio_path:
