@@ -133,6 +133,8 @@ class CustomDataset(Dataset):
             audio_path = row["audio_path"].replace('/malaysian-stt', '')
             if '/workspace' not in audio_path:
                 audio_path = os.path.join('/workspace', audio_path)
+            if '/workspace' in audio_path:
+                audio_path = audio_path.replace('/workspace', os.path.expanduser('~'))
             text = row["text"]
             duration = row["duration"]
 
