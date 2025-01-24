@@ -103,16 +103,14 @@ def load_vocoder(vocoder_name="vocos", is_local=False, local_path="", device=dev
     elif vocoder_name == "bigvgan":
         try:
             from third_party.BigVGAN import bigvgan
+            vocoder = bigvgan.BigVGAN.from_pretrained("nvidia/bigvgan_v2_24khz_100band_256x", use_cuda_kernel=False)
+            vocoder.remove_weight_norm()
+            vocoder = vocoder.eval().to(device)
         except ImportError:
             print("You need to follow the README to init submodule and change the BigVGAN source code.")
-        if is_local:
-            """download from https://huggingface.co/nvidia/bigvgan_v2_24khz_100band_256x/tree/main"""
-            vocoder = bigvgan.BigVGAN.from_pretrained(local_path, use_cuda_kernel=False)
-        else:
-            vocoder = bigvgan.BigVGAN.from_pretrained("nvidia/bigvgan_v2_24khz_100band_256x", use_cuda_kernel=False)
-
-        vocoder.remove_weight_norm()
-        vocoder = vocoder.eval().to(device)
+            from dynamicbatch_ttspipeline.f5_tts.load import load_vocoder
+            vocoder = load_vocoder('nvidia/bigvgan_v2_24khz_100band_256x', vocoder_type = 'bigvgan')
+        
     return vocoder
 
 
