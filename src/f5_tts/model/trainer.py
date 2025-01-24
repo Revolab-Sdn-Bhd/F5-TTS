@@ -342,15 +342,15 @@ class Trainer:
                                 cfg_strength=cfg_strength,
                                 sway_sampling_coef=sway_sampling_coef,
                             )
-                        generated = generated.to(torch.float32)
-                        gen_mel_spec = generated[:, ref_audio_len:, :].permute(0, 2, 1).to(self.accelerator.device)
-                        generated[:, ref_audio_len:, :].permute(0, 2, 1).to(self.accelerator.device)
-                        if self.vocoder_name == "vocos":
-                            gen_audio = vocoder.decode(gen_mel_spec).cpu()
-                            ref_audio = vocoder.decode(ref_mel_spec).cpu()
-                        else:
-                            ref_audio = vocoder(ref_mel_spec).squeeze(0).cpu()
-                            gen_audio = vocoder(gen_mel_spec).squeeze(0).cpu()
+                            generated = generated.to(torch.float32)
+                            gen_mel_spec = generated[:, ref_audio_len:, :].permute(0, 2, 1).to(self.accelerator.device)
+                            generated[:, ref_audio_len:, :].permute(0, 2, 1).to(self.accelerator.device)
+                            if self.vocoder_name == "vocos":
+                                gen_audio = vocoder.decode(gen_mel_spec).cpu()
+                                ref_audio = vocoder.decode(ref_mel_spec).cpu()
+                            else:
+                                ref_audio = vocoder(ref_mel_spec).squeeze(0).cpu()
+                                gen_audio = vocoder(gen_mel_spec).squeeze(0).cpu()
 
                         torchaudio.save(
                             f"{log_samples_path}/step_{global_step}_gen.wav", gen_audio.cpu(), target_sample_rate
