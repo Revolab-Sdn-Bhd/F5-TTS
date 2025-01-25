@@ -33,7 +33,7 @@ max_grad_norm = 1.0
 
 epochs = 100  # use linear decay, thus epochs control the slope
 num_warmup_updates = 2000  # warmup steps
-save_per_updates = 20000  # save checkpoint per steps
+save_per_updates = 20  # save checkpoint per steps
 last_per_steps = 5000  # save last checkpoint per steps
 checkpoint_activations = False
 
