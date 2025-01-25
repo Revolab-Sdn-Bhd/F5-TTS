@@ -326,13 +326,7 @@ class Trainer:
                     if self.log_samples and self.accelerator.is_local_main_process:
                         ref_audio_len = mel_lengths[0]
                         ref_mel_spec = batch["mel"][0].unsqueeze(0)
-                        if self.vocoder_name == "vocos":
-                            ref_audio = vocoder.decode(ref_mel_spec)
-                        else:
-                            ref_audio = vocoder(ref_mel_spec).squeeze(0).cpu()
-                        torchaudio.save(
-                            f"{log_samples_path}/step_{global_step}_ref.wav", ref_audio.cpu(), target_sample_rate
-                        )
+                        
                         with torch.inference_mode():
                             generated, _ = self.accelerator.unwrap_model(self.model).sample(
                                 cond=mel_spec[0][:ref_audio_len].unsqueeze(0),
@@ -344,7 +338,6 @@ class Trainer:
                             )
                             generated = generated.to(torch.float32)
                             gen_mel_spec = generated[:, ref_audio_len:, :].permute(0, 2, 1).to(self.accelerator.device)
-                            generated[:, ref_audio_len:, :].permute(0, 2, 1).to(self.accelerator.device)
                             if self.vocoder_name == "vocos":
                                 gen_audio = vocoder.decode(gen_mel_spec).cpu()
                                 ref_audio = vocoder.decode(ref_mel_spec).cpu()
@@ -352,6 +345,10 @@ class Trainer:
                                 ref_audio = vocoder(ref_mel_spec).squeeze(0).cpu()
                                 gen_audio = vocoder(gen_mel_spec).squeeze(0).cpu()
 
+                        torchaudio.save(
+                            f"{log_samples_path}/step_{global_step}_ref.wav", ref_audio.cpu(), target_sample_rate
+                        )
+                        
                         torchaudio.save(
                             f"{log_samples_path}/step_{global_step}_gen.wav", gen_audio.cpu(), target_sample_rate
                         )

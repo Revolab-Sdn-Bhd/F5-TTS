@@ -194,6 +194,7 @@ class CFM(nn.Module):
             steps = int(steps * (1 - t_start))
 
         t = torch.linspace(t_start, 1, steps, device=self.device, dtype=step_cond.dtype)
+        print(t, t.type)
         if sway_sampling_coef is not None:
             t = t + sway_sampling_coef * (torch.cos(torch.pi / 2 * t) - 1 + t)
 
