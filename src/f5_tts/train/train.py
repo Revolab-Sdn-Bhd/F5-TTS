@@ -89,7 +89,7 @@ def main():
         wandb_run_name=exp_name,
         wandb_resume_id=wandb_resume_id,
         last_per_steps=last_per_steps,
-        log_samples=True,
+        log_samples=False,
         mel_spec_type=mel_spec_type,
     )
 
