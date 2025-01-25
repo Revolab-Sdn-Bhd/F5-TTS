@@ -328,7 +328,9 @@ class Trainer:
                         ref_mel_spec = batch["mel"][0].unsqueeze(0)
                         
                         with torch.inference_mode():
-                            generated, _ = self.accelerator.unwrap_model(self.model).sample(
+                            _model = self.accelerator.unwrap_model(self.model)
+                            print(_model, _model.transformer.text_embed.text_embed.weight.dtype)
+                            generated, _ = _model.sample(
                                 cond=mel_spec[0][:ref_audio_len].unsqueeze(0),
                                 text=[text_inputs[0] + [" "] + text_inputs[0]],
                                 duration=ref_audio_len * 2,
@@ -348,7 +350,7 @@ class Trainer:
                         torchaudio.save(
                             f"{log_samples_path}/step_{global_step}_ref.wav", ref_audio.cpu(), target_sample_rate
                         )
-                        
+
                         torchaudio.save(
                             f"{log_samples_path}/step_{global_step}_gen.wav", gen_audio.cpu(), target_sample_rate
                         )
